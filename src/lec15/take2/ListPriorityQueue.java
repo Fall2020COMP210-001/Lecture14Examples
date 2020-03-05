@@ -5,18 +5,15 @@ import java.util.ArrayList;
 
 public class ListPriorityQueue<V> implements PriorityQueue<V> {
 
-	private List<V> _values;
-	private List<Integer> _priorities;
+	private List<Prioritized<V>> _values;
 	
 	public ListPriorityQueue() {
-		_values = new ArrayList<V>();
-		_priorities = new ArrayList<Integer>();
+		_values = new ArrayList<Prioritized<V>>();
 	}
 	
 	@Override
 	public void enqueue(V value, int priority) {
-		_values.add(value);
-		_priorities.add(priority);
+		_values.add(new PrioritizedImpl<V>(value, priority));
 	}
 
 	@Override
@@ -27,10 +24,7 @@ public class ListPriorityQueue<V> implements PriorityQueue<V> {
 		
 		int idx = find_min_idx();
 		
-		V result = _values.remove(idx);
-		_priorities.remove(idx);
-		
-		return result;
+		return _values.remove(idx).getValue();
 	}
 
 	@Override
@@ -40,7 +34,7 @@ public class ListPriorityQueue<V> implements PriorityQueue<V> {
 		}
 		
 		int idx = find_min_idx();
-		return _values.get(idx);
+		return _values.get(idx).getValue();
 	}
 
 	@Override
@@ -53,13 +47,13 @@ public class ListPriorityQueue<V> implements PriorityQueue<V> {
 		if (size() == 0) {
 			throw new UnsupportedOperationException();
 		}
+		Prioritized<V> min = _values.get(0);
 		int min_idx = 0;
-		int min = _priorities.get(min_idx);
-
-		for (int i=1; i<_priorities.size(); i++) {
-			if (_priorities.get(i) < min) {
+		
+		for (int i=1; i<_values.size(); i++) {
+			if (_values.get(i).getPriority() < min.getPriority()) {
+				min = _values.get(i);
 				min_idx = i;
-				min = _priorities.get(i);
 			}
 		}
 		
